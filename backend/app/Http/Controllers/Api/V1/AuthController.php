@@ -14,8 +14,7 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
-    public function register(RegisterRequest $request): JsonResponse
-    {
+    public function register(RegisterRequest $request): JsonResponse{
         $user = User::create($request->validated());
 
         return response()->json([
@@ -47,5 +46,9 @@ class AuthController extends Controller
         $request->user()->currentAccessToken()->delete();
 
         return response()->json(["message" => "Logged out."]);
+    }
+
+    public function me(Request $request): UserResource{
+        return new UserResource($request->user());
     }
 }
