@@ -1,10 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
-import { useNavigate } from 'react-router'
+import {Link, useNavigate } from 'react-router'
 import { z } from 'zod'
 import { useAuth } from '../auth/AuthContext'
 import { TextField } from '../components/TextField'
 import { applyServerErrors } from '../lib/errors'
+
 
 const schema = z.object({
   email: z.string().min(1, 'Email is required').email('Enter a valid email'),
@@ -59,6 +60,13 @@ export default function LoginPage() {
         >
           {isSubmitting ? 'Logging in…' : 'Log in'}
         </button>
+
+        <p className="text-sm text-neutral-400">
+            New here?{' '}
+            <Link to="/register" className="text-white underline">
+                Create an account
+            </Link>
+        </p>
       </form>
     </main>
   )
