@@ -4,12 +4,18 @@ use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\HealthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\V1\ProductController;
+
+
 
 
 Route::prefix("v1")->group(function () {
     Route::get("/health", HealthController::class);
     Route::post("/register", [AuthController::class, "register"]);
     Route::post("/login", [AuthController::class, "login"]);
+
+    Route::get('/products', [ProductController::class, 'index']);
+    Route::get('/products/{product:slug}', [ProductController::class, 'show']);
 
     Route::middleware("auth:sanctum")->group(function  () {
         Route::get("/me", [AuthController::class, "me"]);
