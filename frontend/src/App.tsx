@@ -4,6 +4,8 @@ import AppLayout from './components/AppLayout'
 import CatalogPage from './pages/CatalogPage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
+import ProductPage from './pages/ProductPage'
+
 
 export default function App() {
   return (
@@ -11,6 +13,7 @@ export default function App() {
       <Route element={<ProtectedRoute />}>
         <Route element={<AppLayout />}>
           <Route path="/" element={<CatalogPage />} />
+          <Route path="/products/:slug" element={<ProductPage />} />
         </Route>
       </Route>
       <Route element={<GuestRoute />}>
