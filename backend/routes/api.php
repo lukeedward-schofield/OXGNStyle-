@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\ProductController;
 use App\Http\Controllers\Api\V1\ProfileController;
+use App\Http\Controllers\Api\V1\SizeRecommendationController;
 
 
 
@@ -25,6 +26,10 @@ Route::prefix("v1")->group(function () {
         // inside Route::middleware("auth:sanctum")->group(...)
         Route::get('/profile', [ProfileController::class, 'show']);
         Route::put('/profile', [ProfileController::class, 'update']);
+    
+
+        // inside Route::middleware("auth:sanctum")->group(...)
+        Route::get('/size-recommendation', SizeRecommendationController::class);
     });
 });
 
