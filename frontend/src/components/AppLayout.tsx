@@ -12,6 +12,9 @@ export default function AppLayout() {
             OXGN Style+
           </Link>
           <div className="flex items-center gap-3 text-sm">
+            <Link to="/measurements" className="text-neutral-300 underline hover:text-white">
+              My measurements
+            </Link>
             <span className="text-neutral-400">{user?.name}</span>
             <button
               onClick={() => void logout()}
