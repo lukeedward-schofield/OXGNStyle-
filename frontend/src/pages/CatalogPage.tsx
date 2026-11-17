@@ -4,6 +4,7 @@ import { Link, useSearchParams } from 'react-router'
 import { fetchProducts, type ProductCategory } from '../api/products'
 import { ProductImage } from '../components/ProductImage'
 import { formatPrice } from '../lib/format'
+import { RecommendationCard } from '../components/RecommendationCard'
 
 const CATEGORIES: { value: ProductCategory; label: string }[] = [
   { value: 'top', label: 'Tops' },
@@ -59,6 +60,7 @@ export default function CatalogPage() {
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold">Catalog</h1>
+      <RecommendationCard />
 
       <div className="flex flex-wrap items-center gap-2">
         <button onClick={() => setParam('category')} className={chip(!category)}>

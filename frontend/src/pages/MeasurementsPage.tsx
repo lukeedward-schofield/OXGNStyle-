@@ -6,6 +6,7 @@ import { z } from 'zod'
 import { fetchProfile, saveProfile, type BodyProfile } from '../api/profile'
 import { TextField } from '../components/TextField'
 import { applyServerErrors } from '../lib/errors'
+import { RecommendationCard } from '../components/RecommendationCard'
 
 // Same sanity ranges as the backend (UpdateProfileRequest).
 const inRange = (v: string, min: number, max: number) => {
@@ -137,6 +138,7 @@ export default function MeasurementsPage() {
       {isPending && <p className="text-neutral-400">Loading…</p>}
       {isError && <p className="text-red-400">Could not load your measurements.</p>}
       {!isPending && !isError && <MeasurementsForm profile={profile} />}
+      {!isPending && !isError && profile && <RecommendationCard promptWhenEmpty={false} />}
     </div>
   )
 }
