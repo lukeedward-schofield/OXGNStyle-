@@ -6,6 +6,7 @@ import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import ProductPage from './pages/ProductPage'
 import MeasurementsPage from './pages/MeasurementsPage'
+import TryOnPage from './pages/TryOnPage'
 
 export default function App() {
   return (
@@ -15,6 +16,7 @@ export default function App() {
           <Route path="/" element={<CatalogPage />} />
           <Route path="/products/:slug" element={<ProductPage />} />
           <Route path="/measurements" element={<MeasurementsPage />} />
+          <Route path="/try-on" element={<TryOnPage />} />
         </Route>
       </Route>
       <Route element={<GuestRoute />}>

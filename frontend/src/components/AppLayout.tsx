@@ -13,7 +13,10 @@ export default function AppLayout() {
           </Link>
           <div className="flex items-center gap-3 text-sm">
             <Link to="/measurements" className="text-neutral-300 underline hover:text-white">
-              My measurements
+              My measurements 
+              <Link to="/try-on" className="text-neutral-300 underline hover:text-white">
+                Try-on
+              </Link>
             </Link>
             <span className="text-neutral-400">{user?.name}</span>
             <button
