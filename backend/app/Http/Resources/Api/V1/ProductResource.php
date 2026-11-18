@@ -23,6 +23,8 @@ class ProductResource extends JsonResource
             'source_url' => $this->source_url,
             'is_sample_data' => $this->is_sample_data,
             'sizes' => ProductSizeResource::collection($this->whenLoaded('sizes')),
+            'avatar_color' => $this->avatar_color,
+            'avatar_shape' => $this->avatar_shape,
         ];
     }
 }
