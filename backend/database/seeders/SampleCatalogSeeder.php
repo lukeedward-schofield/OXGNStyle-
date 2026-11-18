@@ -45,6 +45,8 @@ class SampleCatalogSeeder extends Seeder
                     'fit_note' => $data['fit_note'],
                     'is_sample_data' => true,
                     'is_active' => true,
+                    'avatar_color' => $data['avatar_color'] ?? null,
+                    'avatar_shape' => $data['avatar_shape'] ?? null,
                 ],
             );
 
@@ -65,14 +67,13 @@ class SampleCatalogSeeder extends Seeder
         $oneSize = ['One Size' => null];
 
         return [
-            ['name' => 'Sample Fitted Tee', 'category' => ProductCategory::Top, 'sizing' => 'ladies', 'price' => 699, 'fit_note' => 'Sample data. Measurements from a client sample table.', 'sizes' => self::LADIES_TEE],
-            ['name' => 'Sample Ribbed Tank', 'category' => ProductCategory::Top, 'sizing' => 'ladies', 'price' => 549, 'fit_note' => 'Sample data. Measurements from a client sample table.', 'sizes' => self::LADIES_TEE],
-            ['name' => 'Sample Boxy Tee', 'category' => ProductCategory::Top, 'sizing' => 'mens', 'price' => 749, 'fit_note' => 'Sample data. Measurements from a client sample table.', 'sizes' => self::MENS_TEE],
-            ['name' => 'Sample Graphic Tee', 'category' => ProductCategory::Top, 'sizing' => 'mens', 'price' => 799, 'fit_note' => 'Sample data. Measurements from a client sample table.', 'sizes' => self::MENS_TEE],
-            ['name' => 'Sample Straight Jeans', 'category' => ProductCategory::Bottom, 'sizing' => 'mens', 'price' => 1499, 'fit_note' => self::NO_DIMENSIONS_NOTE, 'sizes' => $letters],
-            ['name' => 'Sample Wide-Leg Pants', 'category' => ProductCategory::Bottom, 'sizing' => 'ladies', 'price' => 1399, 'fit_note' => self::NO_DIMENSIONS_NOTE, 'sizes' => $letters],
-            ['name' => 'Sample Cargo Shorts', 'category' => ProductCategory::Bottom, 'sizing' => 'mens', 'price' => 999, 'fit_note' => self::NO_DIMENSIONS_NOTE, 'sizes' => $letters],
-            ['name' => 'Sample Zip Hoodie', 'category' => ProductCategory::Outerwear, 'sizing' => 'mens', 'price' => 1899, 'fit_note' => self::NO_DIMENSIONS_NOTE, 'sizes' => $letters],
+           ['name' => 'Sample Fitted Tee', 'category' => ProductCategory::Top, 'sizing' => 'ladies', 'price' => 699, 'fit_note' => 'Sample data. Measurements from a client sample table.', 'sizes' => self::LADIES_TEE, 'avatar_shape' => 'tee', 'avatar_color' => '#e5e7eb'],
+            ['name' => 'Sample Ribbed Tank', 'category' => ProductCategory::Top, 'sizing' => 'ladies', 'price' => 549, 'fit_note' => 'Sample data. Measurements from a client sample table.', 'sizes' => self::LADIES_TEE, 'avatar_shape' => 'tank', 'avatar_color' => '#e8b4b8'],
+            ['name' => 'Sample Boxy Tee', 'category' => ProductCategory::Top, 'sizing' => 'mens', 'price' => 749, 'fit_note' => 'Sample data. Measurements from a client sample table.', 'sizes' => self::MENS_TEE, 'avatar_shape' => 'tee', 'avatar_color' => '#c0392b'],
+            ['name' => 'Sample Graphic Tee', 'category' => ProductCategory::Top, 'sizing' => 'mens', 'price' => 799, 'fit_note' => 'Sample data. Measurements from a client sample table.', 'sizes' => self::MENS_TEE, 'avatar_shape' => 'tee', 'avatar_color' => '#3b6ea5'],
+            ['name' => 'Sample Straight Jeans', 'category' => ProductCategory::Bottom, 'sizing' => 'mens', 'price' => 1499, 'fit_note' => self::NO_DIMENSIONS_NOTE, 'sizes' => $letters, 'avatar_shape' => 'pants', 'avatar_color' => '#1f3a5f'],
+            ['name' => 'Sample Wide-Leg Pants', 'category' => ProductCategory::Bottom, 'sizing' => 'ladies', 'price' => 1399, 'fit_note' => self::NO_DIMENSIONS_NOTE, 'sizes' => $letters, 'avatar_shape' => 'pants', 'avatar_color' => '#57534e'],
+            ['name' => 'Sample Cargo Shorts', 'category' => ProductCategory::Bottom, 'sizing' => 'mens', 'price' => 999, 'fit_note' => self::NO_DIMENSIONS_NOTE, 'sizes' => $letters, 'avatar_shape' => 'shorts', 'avatar_color' => '#6b705c'], ['name' => 'Sample Zip Hoodie', 'category' => ProductCategory::Outerwear, 'sizing' => 'mens', 'price' => 1899, 'fit_note' => self::NO_DIMENSIONS_NOTE, 'sizes' => $letters],
             ['name' => 'Sample Denim Jacket', 'category' => ProductCategory::Outerwear, 'sizing' => 'ladies', 'price' => 2199, 'fit_note' => self::NO_DIMENSIONS_NOTE, 'sizes' => $letters],
             ['name' => 'Sample Low-Top Sneakers', 'category' => ProductCategory::Footwear, 'sizing' => null, 'price' => 2499, 'fit_note' => self::NO_DIMENSIONS_NOTE, 'sizes' => $shoes],
             ['name' => 'Sample Dad Cap', 'category' => ProductCategory::Accessory, 'sizing' => null, 'price' => 499, 'fit_note' => null, 'sizes' => $oneSize],

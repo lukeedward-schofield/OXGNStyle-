@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('products', function (Blueprint $table) {
             $table->string('avatar_color', 7)->nullable(); // hex, e.g. #1f3a5f
-            $table->string('avatar_shape', 20)->nullable(); // tee | tank | jeans | shorts
+            $table->string('avatar_shape', 20)->nullable(); // tee | tank | jeans | shorts to tee | tank | pants | shorts
         });
     }
 
