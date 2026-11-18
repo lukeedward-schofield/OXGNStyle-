@@ -1,6 +1,7 @@
 import { api } from '../lib/api'
 
 export type ProductCategory = 'top' | 'bottom' | 'outerwear' | 'footwear' | 'accessory'
+export type AvatarShape = 'tee' | 'tank' | 'pants' | 'shorts'
 
 export type ProductSize = {
   id: number
@@ -16,6 +17,8 @@ export type Product = {
   category: ProductCategory
   description: string | null
   price: number
+  avatar_color: string | null
+  avatar_shape: AvatarShape | null
   sizing: 'mens' | 'ladies' | null
   fit_note: string | null
   image_url: string | null
@@ -42,5 +45,18 @@ export async function fetchProducts(filters: ProductFilters = {}) {
 
 export async function fetchProduct(slug: string) {
   const { data } = await api.get<{ data: Product }>(`/products/${slug}`)
+  return data.data
+}
+
+export type FitLabel = 'snug' | 'regular' | 'loose'
+
+export type SizeFit = {
+  size: string
+  chest_ease_cm: number | null
+  fit: FitLabel | null
+}
+
+export async function fetchProductFit(slug: string) {
+  const { data } = await api.get<{ data: { sizes: SizeFit[] } | null }>(`/products/${slug}/fit`)
   return data.data
 }
