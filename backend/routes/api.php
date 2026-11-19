@@ -8,7 +8,7 @@ use App\Http\Controllers\Api\V1\ProductController;
 use App\Http\Controllers\Api\V1\ProfileController;
 use App\Http\Controllers\Api\V1\SizeRecommendationController;
 use App\Http\Controllers\Api\V1\ProductFitController;
-
+use App\Http\Controllers\Api\V1\OutfitBudgetController;
 
 
 
@@ -35,6 +35,7 @@ Route::prefix("v1")->group(function () {
 
         // inside Route::middleware("auth:sanctum")->group(...)
         Route::get('/products/{product:slug}/fit', ProductFitController::class);
+        Route::get('/outfits/budget', OutfitBudgetController::class);
     });
 });
 
