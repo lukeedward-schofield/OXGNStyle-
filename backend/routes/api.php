@@ -10,7 +10,7 @@ use App\Http\Controllers\Api\V1\SizeRecommendationController;
 use App\Http\Controllers\Api\V1\ProductFitController;
 use App\Http\Controllers\Api\V1\OutfitBudgetController;
 use App\Http\Controllers\Api\V1\ClosetItemController;
-
+use App\Http\Controllers\Api\V1\FeedbackController;
 
 Route::prefix("v1")->group(function () {
     Route::get("/health", HealthController::class);
@@ -41,6 +41,8 @@ Route::prefix("v1")->group(function () {
         Route::post('/closet-items', [ClosetItemController::class, 'store']);
         Route::put('/closet-items/{id}', [ClosetItemController::class, 'update']);
         Route::delete('/closet-items/{id}', [ClosetItemController::class, 'destroy']);
+
+        Route::post('/feedback', [FeedbackController::class, 'store']);
     });
 });
 
