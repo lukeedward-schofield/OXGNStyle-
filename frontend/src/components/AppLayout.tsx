@@ -18,6 +18,9 @@ export default function AppLayout() {
             <Link to="/try-on" className="text-neutral-300 underline hover:text-white">
               Try-on
             </Link>
+            <Link to="/style-lab" className="text-neutral-300 underline hover:text-white">
+              Style Lab
+            </Link>
             <span className="text-neutral-400">{user?.name}</span>
             <button
               onClick={() => void logout()}

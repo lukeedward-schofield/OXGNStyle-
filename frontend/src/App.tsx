@@ -7,6 +7,7 @@ import RegisterPage from './pages/RegisterPage'
 import ProductPage from './pages/ProductPage'
 import MeasurementsPage from './pages/MeasurementsPage'
 import TryOnPage from './pages/TryOnPage'
+import StyleLabPage from './pages/StyleLabPage'
 
 export default function App() {
   return (
@@ -17,6 +18,7 @@ export default function App() {
           <Route path="/products/:slug" element={<ProductPage />} />
           <Route path="/measurements" element={<MeasurementsPage />} />
           <Route path="/try-on" element={<TryOnPage />} />
+          <Route path="/style-lab" element={<StyleLabPage />} />
         </Route>
       </Route>
       <Route element={<GuestRoute />}>
