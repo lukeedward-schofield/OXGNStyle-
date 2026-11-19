@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
-import { useState } from 'react'
+import { useState, type FormEvent } from 'react'
 import { Link } from 'react-router'
+import { fetchBudgetOutfits, type Outfit } from '../api/outfits'
 import { fetchProducts, type Product, type ProductCategory } from '../api/products'
 import { fetchProfile } from '../api/profile'
 import { Avatar } from '../avatar/Avatar'
@@ -23,6 +24,8 @@ const chip = (active: boolean) =>
 export default function StyleLabPage() {
   // One chosen product slug per category. Clicking the chosen one again removes it.
   const [selection, setSelection] = useState<Partial<Record<ProductCategory, string>>>({})
+  const [budgetInput, setBudgetInput] = useState('')
+  const [budget, setBudget] = useState<number | null>(null)
 
   const profileQuery = useQuery({
     queryKey: ['profile'],
@@ -40,14 +43,40 @@ export default function StyleLabPage() {
   })
   const products = productsQuery.data
 
+  // Sizing is in the key because the server filters by the profile's sizing.
+  const outfitsQuery = useQuery({
+    queryKey: ['budget-outfits', budget, sizing],
+    queryFn: () => fetchBudgetOutfits(budget ?? 0),
+    enabled: budget !== null && !profileQuery.isPending,
+    retry: false,
+  })
+
   function toggle(category: ProductCategory, slug: string) {
     setSelection((prev) => ({ ...prev, [category]: prev[category] === slug ? undefined : slug }))
+  }
+
+  function applyBudget(event: FormEvent) {
+    event.preventDefault()
+    const value = Number(budgetInput)
+    if (budgetInput.trim() !== '' && Number.isFinite(value) && value >= 0) setBudget(value)
+  }
+
+  function clearBudget() {
+    setBudgetInput('')
+    setBudget(null)
+  }
+
+  function loadOutfit(outfit: Outfit) {
+    const next: Partial<Record<ProductCategory, string>> = {}
+    for (const p of outfit.products) next[p.category] = p.slug
+    setSelection(next)
   }
 
   const chosen = SLOTS.map((slot) => products?.find((p) => p.slug === selection[slot.category])).filter(
     (p): p is Product => Boolean(p),
   )
   const total = Math.round(chosen.reduce((sum, p) => sum + p.price, 0) * 100) / 100
+  const remaining = budget !== null ? Math.round((budget - total) * 100) / 100 : null
 
   const top = products?.find((p) => p.slug === selection.top)
   const bottom = products?.find((p) => p.slug === selection.bottom)
@@ -63,6 +92,81 @@ export default function StyleLabPage() {
 
       {(profileQuery.isPending || productsQuery.isPending) && <p className="text-neutral-400">Loading…</p>}
       {(profileQuery.isError || productsQuery.isError) && <p className="text-red-400">Could not load the Style Lab.</p>}
+
+      {products && (
+        <section className="space-y-3 rounded-lg border border-neutral-800 p-4">
+          <h2 className="font-semibold">Budget builder</h2>
+          <p className="text-sm text-neutral-400">
+            Enter a budget to see outfits (a top, a bottom and optional extras) that fit within it.
+          </p>
+
+          <form onSubmit={applyBudget} className="flex flex-wrap items-end gap-2">
+            <label className="block">
+              <span className="mb-1 block text-sm text-neutral-300">Budget (₱)</span>
+              <input
+                type="number"
+                min={0}
+                step="any"
+                value={budgetInput}
+                onChange={(e) => setBudgetInput(e.target.value)}
+                placeholder="e.g. 3000"
+                className="w-40 rounded-md border border-neutral-700 bg-neutral-900 px-3 py-2 text-white outline-none focus:border-white"
+              />
+            </label>
+            <button type="submit" className="rounded-md bg-white px-4 py-2 font-medium text-black">
+              Find outfits
+            </button>
+            {budget !== null && (
+              <button
+                type="button"
+                onClick={clearBudget}
+                className="rounded-md border border-neutral-700 px-4 py-2 hover:bg-neutral-800"
+              >
+                Clear budget
+              </button>
+            )}
+          </form>
+
+          {budget !== null && outfitsQuery.isPending && <p className="text-sm text-neutral-400">Finding outfits…</p>}
+          {outfitsQuery.isError && <p className="text-sm text-red-400">Could not load outfit suggestions.</p>}
+          {outfitsQuery.data && outfitsQuery.data.length === 0 && (
+            <p className="text-sm text-neutral-400">
+              No outfit fits within {formatPrice(budget ?? 0)}. A top and a bottom together cost more than that.
+            </p>
+          )}
+          {outfitsQuery.data && outfitsQuery.data.length > 0 && (
+            <div className="space-y-2">
+              <p className="text-sm text-neutral-400">
+                Showing up to {outfitsQuery.data.length} outfits within {formatPrice(budget ?? 0)}, biggest spend first.
+              </p>
+              <ul className="grid gap-3 md:grid-cols-2">
+                {outfitsQuery.data.map((outfit, index) => (
+                  <li key={index} className="space-y-2 rounded-md border border-neutral-800 p-3">
+                    <ul className="space-y-0.5 text-sm text-neutral-300">
+                      {outfit.products.map((p) => (
+                        <li key={p.id} className="flex justify-between gap-4">
+                          <span>{p.name.replace('Sample ', '')}</span>
+                          <span>{formatPrice(p.price)}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <div className="flex items-center justify-between border-t border-neutral-800 pt-2">
+                      <span className="font-semibold">{formatPrice(outfit.total)}</span>
+                      <button
+                        type="button"
+                        onClick={() => loadOutfit(outfit)}
+                        className="rounded-md border border-neutral-700 px-3 py-1 text-sm hover:bg-neutral-800"
+                      >
+                        Try this outfit
+                      </button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </section>
+      )}
 
       {products && (
         <div className="grid gap-6 md:grid-cols-2">
@@ -113,6 +217,14 @@ export default function StyleLabPage() {
                 <span>Total</span>
                 <span>{formatPrice(total)}</span>
               </div>
+
+              {remaining !== null && chosen.length > 0 && (
+                <p className={`text-sm ${remaining >= 0 ? 'text-green-400' : 'text-amber-300'}`}>
+                  {remaining >= 0
+                    ? `${formatPrice(remaining)} left of your ${formatPrice(budget ?? 0)} budget`
+                    : `${formatPrice(-remaining)} over your ${formatPrice(budget ?? 0)} budget`}
+                </p>
+              )}
             </div>
           </div>
 
