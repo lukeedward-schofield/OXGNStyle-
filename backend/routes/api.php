@@ -9,7 +9,7 @@ use App\Http\Controllers\Api\V1\ProfileController;
 use App\Http\Controllers\Api\V1\SizeRecommendationController;
 use App\Http\Controllers\Api\V1\ProductFitController;
 use App\Http\Controllers\Api\V1\OutfitBudgetController;
-
+use App\Http\Controllers\Api\V1\ClosetItemController;
 
 
 Route::prefix("v1")->group(function () {
@@ -36,6 +36,11 @@ Route::prefix("v1")->group(function () {
         // inside Route::middleware("auth:sanctum")->group(...)
         Route::get('/products/{product:slug}/fit', ProductFitController::class);
         Route::get('/outfits/budget', OutfitBudgetController::class);
+
+        Route::get('/closet-items', [ClosetItemController::class, 'index']);
+        Route::post('/closet-items', [ClosetItemController::class, 'store']);
+        Route::put('/closet-items/{id}', [ClosetItemController::class, 'update']);
+        Route::delete('/closet-items/{id}', [ClosetItemController::class, 'destroy']);
     });
 });
 
