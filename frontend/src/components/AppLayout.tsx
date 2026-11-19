@@ -21,6 +21,9 @@ export default function AppLayout() {
             <Link to="/style-lab" className="text-neutral-300 underline hover:text-white">
               Style Lab
             </Link>
+            <Link to="/closet" className="text-neutral-300 underline hover:text-white">
+              Closet
+            </Link>
             <span className="text-neutral-400">{user?.name}</span>
             <button
               onClick={() => void logout()}
