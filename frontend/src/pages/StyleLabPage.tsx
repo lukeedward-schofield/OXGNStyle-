@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { useState, type FormEvent } from 'react'
 import { Link } from 'react-router'
+import { fetchClosetItems, type ClosetItem } from '../api/closet'
 import { fetchBudgetOutfits, type Outfit } from '../api/outfits'
 import { fetchProducts, type Product, type ProductCategory } from '../api/products'
 import { fetchProfile } from '../api/profile'
@@ -21,9 +22,15 @@ const chip = (active: boolean) =>
     active ? 'border-white bg-white text-black' : 'border-neutral-700 text-neutral-300 hover:bg-neutral-800'
   }`
 
+const closetChip = (active: boolean) =>
+  `rounded-full border border-dashed px-3 py-1 text-sm ${
+    active ? 'border-white bg-white text-black' : 'border-neutral-600 text-neutral-300 hover:bg-neutral-800'
+  }`
+
 export default function StyleLabPage() {
-  // One chosen product slug per category. Clicking the chosen one again removes it.
+  // One OXGN product (by slug) or one closet piece (by id) per category, never both.
   const [selection, setSelection] = useState<Partial<Record<ProductCategory, string>>>({})
+  const [closetSelection, setClosetSelection] = useState<Partial<Record<ProductCategory, number>>>({})
   const [budgetInput, setBudgetInput] = useState('')
   const [budget, setBudget] = useState<number | null>(null)
 
@@ -43,6 +50,13 @@ export default function StyleLabPage() {
   })
   const products = productsQuery.data
 
+  const closetQuery = useQuery({
+    queryKey: ['closet-items'],
+    queryFn: fetchClosetItems,
+    retry: false,
+  })
+  const closetItems = closetQuery.data ?? []
+
   // Sizing is in the key because the server filters by the profile's sizing.
   const outfitsQuery = useQuery({
     queryKey: ['budget-outfits', budget, sizing],
@@ -53,6 +67,17 @@ export default function StyleLabPage() {
 
   function toggle(category: ProductCategory, slug: string) {
     setSelection((prev) => ({ ...prev, [category]: prev[category] === slug ? undefined : slug }))
+    setClosetSelection((prev) => ({ ...prev, [category]: undefined }))
+  }
+
+  function toggleCloset(category: ProductCategory, id: number) {
+    setClosetSelection((prev) => ({ ...prev, [category]: prev[category] === id ? undefined : id }))
+    setSelection((prev) => ({ ...prev, [category]: undefined }))
+  }
+
+  function clearOutfit() {
+    setSelection({})
+    setClosetSelection({})
   }
 
   function applyBudget(event: FormEvent) {
@@ -70,11 +95,18 @@ export default function StyleLabPage() {
     const next: Partial<Record<ProductCategory, string>> = {}
     for (const p of outfit.products) next[p.category] = p.slug
     setSelection(next)
+    setClosetSelection({})
   }
 
   const chosen = SLOTS.map((slot) => products?.find((p) => p.slug === selection[slot.category])).filter(
     (p): p is Product => Boolean(p),
   )
+  const chosenCloset = SLOTS.map((slot) => closetItems.find((i) => i.id === closetSelection[slot.category])).filter(
+    (i): i is ClosetItem => Boolean(i),
+  )
+  const hasPicks = chosen.length + chosenCloset.length > 0
+
+  // Closet pieces are already owned, so only OXGN items add to the total.
   const total = Math.round(chosen.reduce((sum, p) => sum + p.price, 0) * 100) / 100
   const remaining = budget !== null ? Math.round((budget - total) * 100) / 100 : null
 
@@ -86,7 +118,7 @@ export default function StyleLabPage() {
       <div>
         <h1 className="text-2xl font-bold">Style Lab</h1>
         <p className="mt-1 text-sm text-neutral-400">
-          Mix and match items to build an outfit. The total updates as you pick.
+          Mix and match OXGN items with pieces from your closet. The total updates as you pick.
         </p>
       </div>
 
@@ -192,22 +224,33 @@ export default function StyleLabPage() {
             <div className="space-y-2 rounded-lg border border-neutral-800 p-4">
               <div className="flex items-baseline justify-between">
                 <h2 className="font-semibold">Your outfit</h2>
-                {chosen.length > 0 && (
-                  <button type="button" onClick={() => setSelection({})} className="text-sm text-neutral-400 underline">
+                {hasPicks && (
+                  <button type="button" onClick={clearOutfit} className="text-sm text-neutral-400 underline">
                     Clear
                   </button>
                 )}
               </div>
 
-              {chosen.length === 0 && <p className="text-sm text-neutral-500">Nothing picked yet.</p>}
-              {chosen.length > 0 && (
+              {!hasPicks && <p className="text-sm text-neutral-500">Nothing picked yet.</p>}
+              {hasPicks && (
                 <ul className="space-y-1 text-sm">
                   {chosen.map((p) => (
-                    <li key={p.id} className="flex justify-between gap-4">
+                    <li key={`p${p.id}`} className="flex justify-between gap-4">
                       <Link to={`/products/${p.slug}`} className="underline">
                         {p.name}
                       </Link>
                       <span className="text-neutral-300">{formatPrice(p.price)}</span>
+                    </li>
+                  ))}
+                  {chosenCloset.map((item) => (
+                    <li key={`c${item.id}`} className="flex items-center justify-between gap-4">
+                      <span className="flex items-center gap-2">
+                        {item.image_url && (
+                          <img src={item.image_url} alt="" className="h-8 w-8 rounded object-cover" />
+                        )}
+                        {item.name}
+                      </span>
+                      <span className="text-neutral-400">From your closet</span>
                     </li>
                   ))}
                 </ul>
@@ -217,8 +260,11 @@ export default function StyleLabPage() {
                 <span>Total</span>
                 <span>{formatPrice(total)}</span>
               </div>
+              {chosenCloset.length > 0 && (
+                <p className="text-xs text-neutral-500">Pieces from your closet are already yours, so they are not counted.</p>
+              )}
 
-              {remaining !== null && chosen.length > 0 && (
+              {remaining !== null && hasPicks && (
                 <p className={`text-sm ${remaining >= 0 ? 'text-green-400' : 'text-amber-300'}`}>
                   {remaining >= 0
                     ? `${formatPrice(remaining)} left of your ${formatPrice(budget ?? 0)} budget`
@@ -231,10 +277,13 @@ export default function StyleLabPage() {
           <div className="space-y-5">
             {SLOTS.map(({ category, label }) => {
               const options = products.filter((p) => p.category === category)
+              const owned = closetItems.filter((i) => i.category === category)
               return (
                 <section key={category} className="space-y-2">
                   <h2 className="text-sm text-neutral-300">{label}</h2>
-                  {options.length === 0 && <p className="text-sm text-neutral-500">Nothing available.</p>}
+                  {options.length === 0 && owned.length === 0 && (
+                    <p className="text-sm text-neutral-500">Nothing available.</p>
+                  )}
                   <div className="flex flex-wrap gap-2">
                     {options.map((p) => (
                       <button
@@ -246,13 +295,33 @@ export default function StyleLabPage() {
                         {p.name.replace('Sample ', '')} · {formatPrice(p.price)}
                       </button>
                     ))}
+                    {owned.map((item) => (
+                      <button
+                        key={`c${item.id}`}
+                        type="button"
+                        onClick={() => toggleCloset(category, item.id)}
+                        className={closetChip(closetSelection[category] === item.id)}
+                      >
+                        {item.name} · yours
+                      </button>
+                    ))}
                   </div>
                 </section>
               )
             })}
 
+            {closetQuery.data && closetItems.length === 0 && (
+              <p className="text-sm text-neutral-500">
+                Want to pair your own clothes?{' '}
+                <Link to="/closet" className="underline">
+                  Add pieces to your closet
+                </Link>
+                .
+              </p>
+            )}
+
             <p className="text-xs text-neutral-500">
-              Items are sample data, not official OXGN listings. Only tops and bottoms are drawn on the avatar.
+              OXGN items are sample data, not official listings. Only OXGN tops and bottoms are drawn on the avatar.
             </p>
           </div>
         </div>
