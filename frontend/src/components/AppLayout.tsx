@@ -1,5 +1,6 @@
 import { Link, Outlet } from 'react-router'
 import { useAuth } from '../auth/AuthContext'
+import { ConsentGate } from './ConsentGate'
 
 export default function AppLayout() {
   const { user, logout } = useAuth()
@@ -38,7 +39,9 @@ export default function AppLayout() {
         </div>
       </header>
       <main className="mx-auto max-w-5xl px-4 py-6">
-        <Outlet />
+        <ConsentGate>
+          <Outlet />
+        </ConsentGate>
       </main>
     </div>
   )
