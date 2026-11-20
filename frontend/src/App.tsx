@@ -9,6 +9,7 @@ import MeasurementsPage from './pages/MeasurementsPage'
 import TryOnPage from './pages/TryOnPage'
 import StyleLabPage from './pages/StyleLabPage'
 import ClosetPage from './pages/ClosetPage'
+import FeedbackPage from './pages/FeedbackPage'
 
 export default function App() {
   return (
@@ -21,6 +22,7 @@ export default function App() {
           <Route path="/try-on" element={<TryOnPage />} />
           <Route path="/style-lab" element={<StyleLabPage />} />
           <Route path="/closet" element={<ClosetPage />} />
+          <Route path="/feedback" element={<FeedbackPage />} />
         </Route>
       </Route>
       <Route element={<GuestRoute />}>
