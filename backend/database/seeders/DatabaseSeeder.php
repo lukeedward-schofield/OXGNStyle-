@@ -17,6 +17,9 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             DemoUserSeeder::class,
+            BodySizeChartSeeder::class,
+            SampleCatalogSeeder::class,
+            AdminUserSeeder::class
         ]);
     }
 }
